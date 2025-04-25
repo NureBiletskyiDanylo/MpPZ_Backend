@@ -1,6 +1,7 @@
 using KidSMedia_API.Data;
 using KidSMedia_API.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Swashbuckle.AspNetCore.SwaggerUI;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -11,7 +12,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<DataContext>(options =>
 {
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
@@ -36,7 +38,8 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.UseSwaggerUI();
+    app.UseSwaggerUI();
 }
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
