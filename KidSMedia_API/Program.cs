@@ -8,6 +8,7 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.WebHost.ConfigureKestrel(opt => { }).UseUrls("https://0.0.0.0:5037");
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -38,8 +39,9 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+    app.UseSwagger();
     app.UseSwaggerUI();
-    app.UseSwaggerUI();
+    app.UseHttpsRedirection();
 }
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
@@ -51,7 +53,6 @@ app.UseCors(builder =>
     builder.AllowAnyMethod();
 });
 
-app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
