@@ -8,7 +8,16 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.WebHost.ConfigureKestrel(opt => { }).UseUrls("https://0.0.0.0:5037");
+if (builder.Environment.IsDevelopment())
+{
+    builder.WebHost.UseUrls("https://localhost:7112;http://localhost:5037");
+}
+else
+{
+    builder.WebHost.UseUrls("http://0.0.0.0:5037");
+}
+
+
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -37,12 +46,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-    app.UseHttpsRedirection();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
+app.UseHttpsRedirection();
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
@@ -53,7 +59,7 @@ app.UseCors(builder =>
     builder.AllowAnyMethod();
 });
 
-
+app.MapGet("/", () => "Hello, world!");
 app.UseAuthentication();
 app.UseAuthorization();
 
