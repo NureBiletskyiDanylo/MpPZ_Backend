@@ -1,4 +1,5 @@
-﻿using KidSMedia_API.Data.Entities;
+﻿using AutoMapper;
+using KidSMedia_API.Data.Entities;
 using KidSMedia_API.DTOs;
 using KidSMedia_API.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -7,7 +8,7 @@ using System.Text;
 
 namespace KidSMedia_API.Controllers
 {
-    public class AccountController(IUserRepository repository, ITokenService tokenService) : BaseApiController
+    public class AccountController(IUserRepository repository, ITokenService tokenService, IMapper mapper) : BaseApiController
     {
         [HttpPost("login")]
         public async Task<ActionResult<UserDto>> Login(LoginDto loginDto)
@@ -67,5 +68,45 @@ namespace KidSMedia_API.Controllers
                 Role = "User"
             };
         }
+
+        [HttpPut("{id:int}")]
+        public async Task<ActionResult> UpdateUser(int id, AccountDto dto)
+        {
+            var user = await repository.GetUserByIdAsync(id);
+            if (user == null) return BadRequest("User was not found");
+
+            user.Username = dto.Username;
+            user.Email = dto.Email;
+            if (user.Role == Enums.Roles.User)
+            {
+                user.Role = dto.Role;
+            }
+
+            bool success = await repository.UpdateUserAsync(user);
+            if (success) return Ok();
+            return BadRequest("User was not updated");
+        }
+
+        [HttpDelete("{id:int}")]
+        public async Task<ActionResult> DeleteUser(int id)
+        {
+            var user = await repository.GetUserByIdAsync(id);
+            if (user == null) return BadRequest("User was not found");
+
+            bool success = await repository.RemoveUserAsync(user);
+            if (success) return Ok();
+            return BadRequest("User was not deleted");
+        }
+
+        [HttpGet("{id:int}")]
+        public async Task<ActionResult> GetUser(int id)
+        {
+            var user = await repository.GetUserByIdAsync(id);
+            if (user == null) return BadRequest("User was not found");
+
+            AccountDto? account = mapper.Map<AccountDto>(user);
+            return Ok(account);
+        }
+
     }
 }
