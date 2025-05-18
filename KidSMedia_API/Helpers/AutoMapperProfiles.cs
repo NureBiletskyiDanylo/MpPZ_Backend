@@ -11,5 +11,8 @@ public class AutoMapperProfiles : Profile
     {
         CreateMap<AccountDto, User>();
         CreateMap<User, AccountDto>();
+        CreateMap<CreateAlbumDto, Album>();
+        CreateMap<AlbumDto, Album>();
+        CreateMap<Album, AlbumDto>();
     }
 }

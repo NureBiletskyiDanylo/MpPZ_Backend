@@ -8,5 +8,5 @@ public class Post
     public User Author { get; set; } = null!;
     public int AlbumId { get; set; }
     public Album Album { get; set; } = null!;
-    public List<Image> Images { get; set; } = [];
+    public List<Image>? Images { get; set; } = [];
 }

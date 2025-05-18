@@ -1,32 +1,52 @@
-﻿using KidSMedia_API.DTOs;
+﻿using AutoMapper;
+using KidSMedia_API.Data.Entities;
+using KidSMedia_API.DTOs;
 using KidSMedia_API.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace KidSMedia_API.Data.Repositories;
 
-public class AlbumRepository : IAlbumRepository
+public class AlbumRepository(DataContext context, IMapper mapper) : IAlbumRepository
 {
-    public Task<bool> CreateAlbumAsync(CreateAlbumDto model)
+    public async Task<bool> CreateAlbumAsync(CreateAlbumDto model)
     {
-        throw new NotImplementedException();
+        var album = mapper.Map<Album>(model);
+        if (album == null) throw new ArgumentException("Album has corrupted data. Cannot be created");
+
+        await context.Albums.AddAsync(album);
+        return await context.SaveChangesAsync() > 0; 
+
     }
 
-    public Task<bool> DeleteAlbumByIdAsync(int albumId)
+    public async Task<bool> DeleteAlbumByIdAsync(int albumId)
     {
-        throw new NotImplementedException();
+        var album = await context.Albums.FindAsync(albumId);
+        if (album == null) return false;
+
+        context.Albums.Remove(album);
+        return await context.SaveChangesAsync() > 0;
     }
 
-    public Task<AlbumDto> EditAlbumAsync(AlbumDto updatedAlbum)
+    public async Task<bool> EditAlbumAsync(AlbumDto updatedAlbum)
     {
-        throw new NotImplementedException();
+        var album = await context.Albums.FindAsync(updatedAlbum.Id);
+        if (album == null) throw new ArgumentException("Updated album does not exist");
+
+        album.Title = updatedAlbum.Title;
+        album.ChildDateOfBirth = updatedAlbum.ChildDateOfBirth;
+        return await context.SaveChangesAsync() > 0;
     }
 
-    public Task<AlbumDto> GetAlbumByIdAsync(int id)
+    public async Task<AlbumDto> GetAlbumByIdAsync(int id)
     {
-        throw new NotImplementedException();
+        var album = await context.Albums.FindAsync(id);
+        if (album == null) throw new ArgumentNullException("Album was not found");
+        return mapper.Map<AlbumDto>(album);
     }
 
-    public Task<List<AlbumDto>> GetAlbumsByUserIdAsync(int userId)
+    public async Task<List<AlbumDto>> GetAlbumsByUserIdAsync(int userId)
     {
-        throw new NotImplementedException();
+        List<Album> albums = await context.Albums.Where(a => a.OwnerId == userId).ToListAsync();
+        return albums == null ? new List<AlbumDto>() : mapper.Map<List<AlbumDto>>(albums);
     }
 }
