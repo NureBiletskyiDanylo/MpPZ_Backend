@@ -1,13 +1,13 @@
 ﻿using KidSMedia_API.Data.Entities;
 using KidSMedia_API.DTOs;
 using KidSMedia_API.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KidSMedia_API.Controllers;
 
-[ApiController]
-[Route("api/[controller]")]
-public class PostsController : ControllerBase
+[Authorize]
+public class PostsController : BaseApiController
 {
     private readonly IPostRepository _postRepo;
     private readonly IWebHostEnvironment _env;
