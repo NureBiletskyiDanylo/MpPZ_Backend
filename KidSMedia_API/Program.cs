@@ -60,6 +60,7 @@ using (var scope = app.Services.CreateScope())
 app.UseSwagger();
 app.UseSwaggerUI();
 app.UseHttpsRedirection();
+app.UseStaticFiles();
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 

@@ -1,4 +1,5 @@
-﻿using KidSMedia_API.DTOs;
+﻿using KidSMedia_API.Data.Entities;
+using KidSMedia_API.DTOs;
 
 namespace KidSMedia_API.Interfaces;
 
@@ -8,4 +9,5 @@ public interface IPostRepository
     Task<List<PostDto>> GetPostsByAlbumIdAsync(int albumId);
     Task<bool> CreatePostAsync(CreatePostDto model);
     Task<bool> RemovePostByIdAsync(int postId);
+    Task<bool> UpdatePostAsync(Post post);
 }
